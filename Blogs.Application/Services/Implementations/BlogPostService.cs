@@ -60,6 +60,7 @@ namespace Blogs.Application.Services.Implementations
             blogPost.HtmlContent = _sanitizer.Sanitize(blogPost.HtmlContent);
 
             var blogPostModel = _mapper.Map<BlogPost>(blogPost);
+            blogPostModel.Id = Guid.NewGuid();
             blogPostModel.CreationDate = DateTime.Now;
             blogPostModel.CreationUser = user.Id;
             blogPostModel.UpdateDate = DateTime.Now;

@@ -72,7 +72,12 @@ namespace Blogs.Application.Services.Implementations
             if (userModel != null)
                 throw new BusinessException("The user already exists");
 
+            userModel.Id = Guid.NewGuid();
             userModel.Password = System.Text.Encoding.UTF8.GetBytes(Encrypt.EncryptText(registerDTO.Password));
+            userModel.CreationDate = DateTime.Now;
+            userModel.CreationUser = userModel.Id;
+            userModel.UpdateDate = DateTime.Now;
+            userModel.UpdateUser = userModel.Id;
 
             _unitOfWork.UserRepository.Insert(userModel);
             _unitOfWork.Commit();

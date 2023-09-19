@@ -38,7 +38,7 @@ namespace Blogs.Application.Services.Implementations
             _userValidator = userValidator;
         }
 
-        public async Task CreateAsync(CreateCommentDTO comment, UserDTO user, CancellationToken cancellationToken = default)
+        public async Task<CommentResultDTO> CreateAsync(CreateCommentDTO comment, UserDTO user, CancellationToken cancellationToken = default)
         {
             if (comment == null)
                 throw new ArgumentNullException(nameof(comment));
@@ -57,6 +57,7 @@ namespace Blogs.Application.Services.Implementations
                 throw new BusinessException(string.Join("\n", userValidation.Errors));
 
             var commentModel = _mapper.Map<Comment>(comment);
+            commentModel.Id = Guid.NewGuid();
             commentModel.CreationDate = DateTime.Now;
             commentModel.CreationUser = user.Id;
             commentModel.UpdateDate = DateTime.Now;
@@ -64,6 +65,8 @@ namespace Blogs.Application.Services.Implementations
 
             _unitOfWork.CommentRepository.Insert(commentModel);
             _unitOfWork.Commit();
+
+            return _mapper.Map<CommentResultDTO>(commentModel);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
@@ -82,7 +85,7 @@ namespace Blogs.Application.Services.Implementations
             return _mapper.Map<CommentResultDTO>(_unitOfWork.CommentRepository.Get(id));
         }
 
-        public async Task UpdateAsync(UpdateCommentDTO comment, UserDTO user, CancellationToken cancellationToken = default)
+        public async Task<CommentResultDTO> UpdateAsync(UpdateCommentDTO comment, UserDTO user, CancellationToken cancellationToken = default)
         {
             if (comment == null)
                 throw new ArgumentNullException(nameof(comment));
@@ -107,6 +110,8 @@ namespace Blogs.Application.Services.Implementations
             _unitOfWork.CommentRepository.Update(_mapper.Map(comment, commentToUpdate));
 
             _unitOfWork.Commit();
+
+            return _mapper.Map<CommentResultDTO>(comment);
         }
     }
 }
