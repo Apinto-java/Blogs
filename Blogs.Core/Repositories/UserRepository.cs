@@ -14,5 +14,10 @@ namespace Blogs.Core.Repositories
         public UserRepository(BlogPostsApiContext context) : base(context)
         {
         }
+
+        public User GetByUsername(string username)
+        {
+            return _dbSet.FirstOrDefault(x => x.Username == username);
+        }
     }
 }

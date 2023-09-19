@@ -10,8 +10,8 @@ namespace Blogs.Core.Repositories.Abstractions
 {
     public abstract class RepositoryBase<T, TKey> : IRepository<T, TKey> where T : class 
     {
-        private readonly BlogPostsApiContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly BlogPostsApiContext _context;
+        protected readonly DbSet<T> _dbSet;
 
         public RepositoryBase(BlogPostsApiContext context)
         {
@@ -52,7 +52,6 @@ namespace Blogs.Core.Repositories.Abstractions
                 _context.Entry(item).State = EntityState.Modified;
             }
         }
-
 
         public void Delete(TKey id)
         {
