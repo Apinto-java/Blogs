@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blogs.API", "Blogs.API\Blogs.API.csproj", "{4205BA21-6A30-4F95-A1BF-EE30FFF3535A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blogs.Core", "Blogs.Core\Blogs.Core.csproj", "{583C0681-ACAF-4936-A15B-BE1E442B4522}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4205BA21-6A30-4F95-A1BF-EE30FFF3535A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4205BA21-6A30-4F95-A1BF-EE30FFF3535A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4205BA21-6A30-4F95-A1BF-EE30FFF3535A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4205BA21-6A30-4F95-A1BF-EE30FFF3535A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{583C0681-ACAF-4936-A15B-BE1E442B4522}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{583C0681-ACAF-4936-A15B-BE1E442B4522}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{583C0681-ACAF-4936-A15B-BE1E442B4522}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{583C0681-ACAF-4936-A15B-BE1E442B4522}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {730895FD-A91B-4580-AE44-4D89D1B04C61}
+	EndGlobalSection
+EndGlobal
