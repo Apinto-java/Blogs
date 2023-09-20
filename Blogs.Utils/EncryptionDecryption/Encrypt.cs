@@ -11,7 +11,7 @@ namespace Blogs.Utils.EncryptionDecryption
     {
         public static string EncryptText(string cipher)
         {
-            return Hash.Create(HashType.SHA512, cipher, null, false);
+            return Hash.Create(HashType.SHA512, cipher, string.Empty, false);
         }
     }
 }

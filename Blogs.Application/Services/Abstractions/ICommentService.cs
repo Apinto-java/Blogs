@@ -10,10 +10,10 @@ namespace Blogs.Application.Services.Abstractions
 {
     public interface ICommentService
     {
-        Task<CommentResultDTO> GetAsync(Guid id, CancellationToken cancellationToken = default);
-        Task<IEnumerable<CommentResultDTO>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<CommentResultDTO> CreateAsync(CreateCommentDTO comment, UserDTO user, CancellationToken cancellationToken = default);
-        Task<CommentResultDTO> UpdateAsync(UpdateCommentDTO comment, UserDTO user, CancellationToken cancellationToken = default);
-        Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<CommentResultDTO> GetCommentOfBlogPost(Guid blogPostId, Guid id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<CommentResultDTO>> GetBlogPostComments(Guid blogPostId, CancellationToken cancellationToken = default);
+        Task<CommentResultDTO> CreateAsync(CreateCommentDTO comment, Guid userId, CancellationToken cancellationToken = default);
+        Task<CommentResultDTO> UpdateAsync(UpdateCommentDTO comment, Guid userId, CancellationToken cancellationToken = default);
+        Task DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken = default);
     }
 }

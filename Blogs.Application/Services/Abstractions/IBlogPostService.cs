@@ -12,8 +12,8 @@ namespace Blogs.Application.Services.Abstractions
     {
         Task<BlogPostResultDTO> GetAsync(Guid id, CancellationToken cancellationToken = default);
         Task<IEnumerable<BlogPostResultDTO>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<BlogPostResultDTO> CreateAsync(CreateBlogPostDTO blogPost, UserDTO user, CancellationToken cancellationToken = default);
-        Task<BlogPostResultDTO> UpdateAsync(UpdateBlogPostDTO comment, UserDTO user, CancellationToken cancellationToken = default);
-        Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<BlogPostResultDTO> CreateAsync(CreateBlogPostDTO blogPost, Guid userId, CancellationToken cancellationToken = default);
+        Task<BlogPostResultDTO> UpdateAsync(UpdateBlogPostDTO comment, Guid userId, CancellationToken cancellationToken = default);
+        Task DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken = default);
     }
 }

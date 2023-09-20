@@ -12,6 +12,7 @@ namespace Blogs.Application.Validators.Comment
     {
         public UpdateCommentValidator() 
         {
+            RuleFor(x => x.Id).NotNull().NotEmpty().WithMessage("Specify the id of the comment");
             RuleFor(x => x.Text).NotNull().NotEmpty().WithMessage("Text must not be empty");
         }
     }

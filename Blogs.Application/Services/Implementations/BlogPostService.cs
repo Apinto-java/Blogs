@@ -10,6 +10,7 @@ using Ganss.Xss;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,104 +20,114 @@ namespace Blogs.Application.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly HtmlSanitizer _sanitizer;
+        private readonly IHtmlSanitizer _sanitizer;
         private readonly AbstractValidator<CreateBlogPostDTO> _createValidator;
-        private readonly AbstractValidator<UpdateBlogPostDTO> _updateValidator;
-        private readonly AbstractValidator<UserDTO> _userValidator; 
+        private readonly AbstractValidator<UpdateBlogPostDTO> _updateValidator; 
 
         public BlogPostService(IUnitOfWork unitOfWork, 
             IMapper mapper, 
-            HtmlSanitizer sanitizer, 
+            IHtmlSanitizer sanitizer, 
             AbstractValidator<CreateBlogPostDTO> createValidator,
-            AbstractValidator<UpdateBlogPostDTO> updateValidator,
-            AbstractValidator<UserDTO> userValidator)
+            AbstractValidator<UpdateBlogPostDTO> updateValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _sanitizer = sanitizer;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
-            _userValidator = userValidator;
         }
 
-        public async Task<BlogPostResultDTO> CreateAsync(CreateBlogPostDTO blogPost, UserDTO user, CancellationToken cancellationToken = default)
+        public async Task<BlogPostResultDTO> CreateAsync(CreateBlogPostDTO blogPost, Guid userId, CancellationToken cancellationToken = default)
         {
             if (blogPost == null)
                 throw new ArgumentNullException(nameof(blogPost));
 
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
+            if(userId == null)
+                throw new ArgumentNullException(nameof(userId));
 
             var validation = await _createValidator.ValidateAsync(blogPost);
 
             if (!validation.IsValid)
                 throw new BusinessException(string.Join("\n", validation.Errors));
 
-            var userValidation = await _userValidator.ValidateAsync(user);
-
-            if (!userValidation.IsValid)
-                throw new BusinessException(string.Join("\n", userValidation.Errors));
+            if (!_unitOfWork.UserRepository.Exists(userId))
+                throw new BusinessException("User does not exist");
 
             blogPost.HtmlContent = _sanitizer.Sanitize(blogPost.HtmlContent);
 
             var blogPostModel = _mapper.Map<BlogPost>(blogPost);
             blogPostModel.Id = Guid.NewGuid();
             blogPostModel.CreationDate = DateTime.Now;
-            blogPostModel.CreationUser = user.Id;
+            blogPostModel.CreationUser = userId;
             blogPostModel.UpdateDate = DateTime.Now;
-            blogPostModel.UpdateUser = user.Id;
+            blogPostModel.UpdateUser = userId;
 
             _unitOfWork.BlogPostsRepository.Insert(blogPostModel);
             _unitOfWork.Commit();
 
-            return _mapper.Map<BlogPostResultDTO>(blogPostModel);
+            var result = _mapper.Map<BlogPostResultDTO>(blogPostModel);
+
+            return result;
         }
 
-        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task DeleteAsync(Guid id, Guid userId, CancellationToken cancellationToken = default)
         {
+            var blogPost = _unitOfWork.BlogPostsRepository.Get(id);
+
+            if (blogPost.CreationUser != userId)
+                throw new BusinessException("You can't delete this post, you are not its author");
+
             _unitOfWork.BlogPostsRepository.Delete(id);
             _unitOfWork.Commit();
         }
 
         public async Task<IEnumerable<BlogPostResultDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return _unitOfWork.BlogPostsRepository.GetAll().Select(blogPost => _mapper.Map<BlogPostResultDTO>(blogPost));
+            return _unitOfWork.BlogPostsRepository.GetAll()
+                .Select(blogPost => _mapper.Map<BlogPostResultDTO>(blogPost));
         }
 
         public async Task<BlogPostResultDTO> GetAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return _mapper.Map<BlogPostResultDTO>(_unitOfWork.BlogPostsRepository.Get(id));
+            var blogPost = _unitOfWork.BlogPostsRepository.Get(id);
+            var result = _mapper.Map<BlogPostResultDTO>(blogPost);
+
+            return result;
         }
 
-        public async Task<BlogPostResultDTO> UpdateAsync(UpdateBlogPostDTO blogPost, UserDTO user, CancellationToken cancellationToken = default)
+        public async Task<BlogPostResultDTO> UpdateAsync(UpdateBlogPostDTO blogPost, Guid userId, CancellationToken cancellationToken = default)
         {
             if (blogPost == null)
                 throw new ArgumentNullException(nameof(blogPost));
 
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
 
             var validation = await _updateValidator.ValidateAsync(blogPost);
 
             if (!validation.IsValid)
                 throw new BusinessException(string.Join("\n", validation.Errors));
 
-            var userValidation = await _userValidator.ValidateAsync(user);
-
-            if (!userValidation.IsValid)
-                throw new BusinessException(string.Join("\n", userValidation.Errors));
+            if (!_unitOfWork.UserRepository.Exists(userId))
+                throw new BusinessException("User does not exist");
 
             blogPost.HtmlContent = _sanitizer.Sanitize(blogPost.HtmlContent);
 
             var blogPostToUpdate = _unitOfWork.BlogPostsRepository.Get(blogPost.Id);
+
+            if (blogPostToUpdate.CreationUser != userId)
+                throw new BusinessException("You can't edit this Post, you are not its author");
+
             blogPostToUpdate.UpdateDate = DateTime.Now;
-            blogPostToUpdate.UpdateUser = user.Id;
+            blogPostToUpdate.UpdateUser = userId;
 
             _unitOfWork.BlogPostsRepository.Update(_mapper.Map(blogPost, blogPostToUpdate));
 
             _unitOfWork.Commit();
 
-            return _mapper.Map<BlogPostResultDTO>(blogPostToUpdate);
+            var result = _mapper.Map<BlogPostResultDTO>(blogPostToUpdate);
+
+            return result;
         }
     }
 }

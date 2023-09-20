@@ -12,6 +12,7 @@ namespace Blogs.Application.Validators.Comment
     {
         public CreateCommentValidator() 
         { 
+            RuleFor(x => x.BlogPostId).NotNull().NotEmpty().WithMessage("Must specify the Blog");
             RuleFor(x => x.Text).NotNull().NotEmpty().WithMessage("Text must not be empty");
         }
     }

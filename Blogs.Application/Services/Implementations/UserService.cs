@@ -8,6 +8,7 @@ using Blogs.Core;
 using Blogs.Core.Models;
 using Blogs.Utils.EncryptionDecryption;
 using FluentValidation;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,24 +23,27 @@ namespace Blogs.Application.Services.Implementations
         private readonly IMapper _mapper;
         private readonly AbstractValidator<RegisterRequestDTO> _registerValidator;
         private readonly AbstractValidator<LoginRequestDTO> _loginValidator;
+        private readonly IJwtService _jwtService;
 
         public UserService(IUnitOfWork unitOfWork, 
             IMapper mapper, 
             AbstractValidator<RegisterRequestDTO> registerValidator, 
-            AbstractValidator<LoginRequestDTO> loginValidator)
+            AbstractValidator<LoginRequestDTO> loginValidator,
+            IJwtService jwtService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _registerValidator = registerValidator;
             _loginValidator = loginValidator;
+            _jwtService = jwtService;
         }
 
-        public async Task LoginAsync(LoginRequestDTO loginDTO, CancellationToken cancellationToken = default)
+        public async Task<LoginResultDTO> LoginAsync(LoginRequestDTO loginDTO, CancellationToken cancellationToken = default)
         {
             if(loginDTO == null)
                 throw new ArgumentNullException(nameof(loginDTO));
 
-            var validation = await _loginValidator.ValidateAsync(loginDTO);
+            var validation = await _loginValidator.ValidateAsync(loginDTO, options => options.IncludeRuleSets("UsernameAndPassword"));
 
             if (!validation.IsValid)
                 throw new BusinessException(string.Join("\n", validation.Errors));
@@ -51,10 +55,10 @@ namespace Blogs.Application.Services.Implementations
 
             var passwordEncrypted = Encrypt.EncryptText(loginDTO.Password);
 
-            if (System.Text.Encoding.UTF8.GetBytes(passwordEncrypted) != userModel.Password)
+            if (!System.Text.Encoding.UTF8.GetBytes(passwordEncrypted).SequenceEqual(userModel.Password))
                 throw new BusinessException("Incorrect user or password");
 
-            //TODO: When the user exists
+            return _jwtService.GenerateJWT(userModel.Id);
         }
 
         public async Task RegisterAsync(RegisterRequestDTO registerDTO, CancellationToken cancellationToken = default)
@@ -62,7 +66,7 @@ namespace Blogs.Application.Services.Implementations
             if (registerDTO == null)
                 throw new ArgumentNullException(nameof(registerDTO));
 
-            var validation = await _registerValidator.ValidateAsync(registerDTO);
+            var validation = await _registerValidator.ValidateAsync(registerDTO, options => options.IncludeRuleSets("UsernameAndPassword"));
 
             if (!validation.IsValid)
                 throw new BusinessException(string.Join("\n", validation.Errors));
@@ -72,6 +76,7 @@ namespace Blogs.Application.Services.Implementations
             if (userModel != null)
                 throw new BusinessException("The user already exists");
 
+            userModel = _mapper.Map<User>(registerDTO);
             userModel.Id = Guid.NewGuid();
             userModel.Password = System.Text.Encoding.UTF8.GetBytes(Encrypt.EncryptText(registerDTO.Password));
             userModel.CreationDate = DateTime.Now;

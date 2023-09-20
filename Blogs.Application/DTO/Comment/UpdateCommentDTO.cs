@@ -9,9 +9,7 @@ namespace Blogs.Application.DTO.Comment
 {
     public class UpdateCommentDTO
     {
-        [Required]
         public Guid Id { get; set; }
-        [Required]
         public string Text {  get; set; }
     }
 }

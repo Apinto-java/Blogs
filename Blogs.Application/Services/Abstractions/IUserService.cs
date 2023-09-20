@@ -9,7 +9,7 @@ namespace Blogs.Application.Services.Abstractions
 {
     public interface IUserService
     {
-        Task LoginAsync(LoginRequestDTO loginDTO, CancellationToken cancellationToken = default);
+        Task<LoginResultDTO> LoginAsync(LoginRequestDTO loginDTO, CancellationToken cancellationToken = default);
         Task RegisterAsync(RegisterRequestDTO registerDTO, CancellationToken cancellationToken = default);
     }
 }

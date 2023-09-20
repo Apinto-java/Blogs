@@ -9,9 +9,7 @@ namespace Blogs.Application.DTO.User
 {
     public class LoginRequestDTO
     {
-        [Required, MinLength(8)]
         public string Username { get; set; }
-        [Required, MinLength(8)]
         public string Password { get; set; }    
     }
 }

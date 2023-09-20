@@ -23,8 +23,32 @@ namespace Blogs.Application.MappingProfile
             CreateMap<Comment, UpdateCommentDTO>().ReverseMap();
             CreateMap<Comment, CommentResultDTO>().ReverseMap();
 
-            CreateMap<User, LoginRequestDTO>().ReverseMap();
-            CreateMap<User, RegisterRequestDTO>().ReverseMap();
+            CreateMap<User, LoginRequestDTO>().ReverseMap()
+                .ForMember(x => x.BlogPostCreationUserNavigations, options => options.Ignore())
+                .ForMember(x => x.BlogPostUpdateUserNavigations, options => options.Ignore())
+                .ForMember(x => x.CommentCreationUserNavigations, options => options.Ignore())
+                .ForMember(x => x.CommentUpdateUserNavigations, options => options.Ignore())
+                .ForMember(x => x.InverseCreationUserNavigation, options => options.Ignore())
+                .ForMember(x => x.InverseUpdateUserNavigation, options => options.Ignore())
+                .ForMember(x => x.UpdateDate, options => options.Ignore())
+                .ForMember(x => x.CreationDate, options => options.Ignore())
+                .ForMember(x => x.CreationUser, options => options.Ignore())
+                .ForMember(x => x.CreationUser, options => options.Ignore())
+                .ForMember(x => x.Password, options => options.Ignore());
+
+
+            CreateMap<User, RegisterRequestDTO>().ReverseMap()
+                .ForMember(x => x.BlogPostCreationUserNavigations, options => options.Ignore())
+                .ForMember(x => x.BlogPostUpdateUserNavigations, options => options.Ignore())
+                .ForMember(x => x.CommentCreationUserNavigations, options => options.Ignore())
+                .ForMember(x => x.CommentUpdateUserNavigations, options => options.Ignore())
+                .ForMember(x => x.InverseCreationUserNavigation, options => options.Ignore())
+                .ForMember(x => x.InverseUpdateUserNavigation, options => options.Ignore())
+                .ForMember(x => x.UpdateDate, options => options.Ignore())
+                .ForMember(x => x.CreationDate, options => options.Ignore())
+                .ForMember(x => x.CreationUser, options => options.Ignore())
+                .ForMember(x => x.CreationUser, options => options.Ignore())
+                .ForMember(x => x.Password, options => options.Ignore()); ;
         }
     }
 }
